@@ -3,9 +3,9 @@ info:
   title: "Autoshop API"
   description: "This is a API to manage an autoshop"
   version: "1.0.0"
-host: "127.0.0.1:5000"
+host: "backend-project-xd8d.onrender.com"
 schemes:
-  - "http"
+  - "https"
 consumes:
   - "application/json"
 produces:
