@@ -19,7 +19,7 @@ def create_inventory():
     db.session.add(new_inventory)
     db.session.commit()
     
-    return inventory_schema.jsonify(new_inventory), 200
+    return inventory_schema.jsonify(new_inventory), 201
 
 
 @inventory_bp.route("/", methods=['GET'])

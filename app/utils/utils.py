@@ -40,7 +40,7 @@ def token_required(f):
             except jwt.InvalidTokenError:
                 return jsonify({'message': 'invalid token'}), 400
             
-            return f(customer_id, *args, **kwargs)
+            return f(*args, **kwargs)
         else:
             return jsonify({'message': 'You must be logged in to access this.'}), 400
 

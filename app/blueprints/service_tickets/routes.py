@@ -68,7 +68,7 @@ def edit_service_ticket(service_ticket_id):
     query = select(ServiceTicket).where(ServiceTicket.id == service_ticket_id)
     service_ticket = db.session.execute(query).scalars().first()
     
-    for mechanic_id in service_ticket_edits['add mechanic_ids']:
+    for mechanic_id in service_ticket_edits['add_mechanic_ids']:
         query = select(Mechanic).where(Mechanic.id == mechanic_id)
         mechanic = db.session.execute(query).scalars().first()
     
@@ -76,7 +76,7 @@ def edit_service_ticket(service_ticket_id):
             service_ticket.mechanics.append(mechanic)
 
 
-    for mechanic_id in service_ticket_edits['remove mechanic_ids']:
+    for mechanic_id in service_ticket_edits['remove_mechanic_ids']:
         query = select(Mechanic).where(Mechanic.id == mechanic_id)
         mechanic = db.session.execute(query).scalars().first()
         
@@ -87,7 +87,7 @@ def edit_service_ticket(service_ticket_id):
     return service_ticket_schema.jsonify(service_ticket)
 
 
-@service_tickets_bp.route("/<int:ticket_id>/add-inventory/<int:part_id>", methods=["POST"])
+@service_tickets_bp.route("/<int:ticket_id>/add-inventory/<int:inventory_id>", methods=["POST"])
 def add_inventory_to_ticket(ticket_id, inventory_id):
     ticket = db.session.get(ServiceTicket, ticket_id)
     inventory = db.session.get(Inventory, inventory_id)

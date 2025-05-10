@@ -3,7 +3,7 @@ from app.blueprints.mechanics.schemas import mechanic_schema, mechanics_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
 from app.models import Mechanic, db
-from sqlalchemy import select, delete
+from sqlalchemy import select
 from app.extension import cache
 
 @mechanics_bp.route("/", methods=["POST"])
@@ -19,7 +19,7 @@ def create_mechanic():
     db.session.add(new_mechanic)
     db.session.commit()
     
-    return mechanic_schema.jsonify(new_mechanic), 200
+    return mechanic_schema.jsonify(new_mechanic), 201
 
 @mechanics_bp.route("/", methods=['GET'])
 @cache.cached(timeout=60)
@@ -36,7 +36,7 @@ def update_mechanic(mechanic_id):
     print(mechanic)
     
     if mechanic == None:
-        return jsonify({"message": "invalid mechanic id"})
+        return jsonify({"message": "invalid mechanic id"}), 400
     
     try:
         mechanic_data = mechanic_schema.load(request.json)
@@ -58,14 +58,14 @@ def delete_mechanic(mechanic_id):
     
     db.session.delete(mechanic)
     db.session.commit()
-    return jsonify({"message": f"successfully deleted mechanic {mechanic_id}"})
+    return jsonify({"message": f"successfully deleted mechanic {mechanic_id}"}), 200
     
-@mechanics_bp.route("/most_tickets>", methods=["GET"])
+@mechanics_bp.route("/most_tickets", methods=["GET"])
 def most_tickets_mechanics():
     query = select(Mechanic)
     mechanics = db.session.execute(query).scalars().all()
     
-    mechanics.sort(key = lambda mechanics : len(mechanics.service_tickets), reversed=True)
+    mechanics.sort(key = lambda mechanics : len(mechanics.service_tickets), reverse=True)
     
     return mechanic_schema.jsonify(mechanics)
 

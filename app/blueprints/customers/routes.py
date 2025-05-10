@@ -21,15 +21,15 @@ def login():
     if customer and customer.password  ==  password:
         token = encode_token(customer.id)
         
-        response ={
+        response = {
             'status': 'success',
-            'message': 'sucessfully logged in',
+            'message': 'successfully logged in',
             'token': token
         }
         
         return jsonify(response), 200
     else:
-        return jsonify({"message" : "Invalid email or password"})
+        return jsonify({"message" : "Invalid email or password"}), 400
     
     
 @customers_bp.route("/", methods=['GET'])
@@ -64,17 +64,17 @@ def create_customer():
     db.session.add(new_customer)
     db.session.commit()
     
-    return customer_schema.jsonify(new_customer), 200
+    return customer_schema.jsonify(new_customer), 201
 
-@customers_bp.route("/", methods=["PUT"])
+@customers_bp.route("/<int:customer_id>", methods=["PUT"])
 @token_required
 def update_customer(customer_id):
     query = select(Customer).where(Customer.id == customer_id)
     customer = db.session.execute(query).scalars().first()
     print(customer)
     
-    if customer == None:
-        return jsonify({"message": "invalid customer id"})
+    if customer is None:
+        return jsonify({"message": "invalid customer id"}), 404
     
     try:
         customer_data = customer_schema.load(request.json)
@@ -88,13 +88,16 @@ def update_customer(customer_id):
     db.session.commit()
     return customer_schema.jsonify(customer), 200
 
-@customers_bp.route("/", methods=["DELETE"])
+@customers_bp.route("/<int:customer_id>", methods=["DELETE"])
 @token_required
 def delete_customer(customer_id):
     query = select(Customer).where(Customer.id == customer_id)
     customer = db.session.execute(query).scalars().first()
     
+    if customer is None:
+        return jsonify({"message": "Customer not found"}), 404
+    
     db.session.delete(customer)
     db.session.commit()
-    return jsonify({"message": f"successfully deleted customer {customer_id}"})
+    return jsonify({"message": f"successfully deleted customer {customer_id}"}), 200
     
